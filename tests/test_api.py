@@ -25,11 +25,11 @@ def test_prediction():
         json={
             "P": 50.0,
             "D": 0.025,
-            "µ": 0.5,
+            "μ": 0.5,
             "a": 0.11804,
         },
     )
-
+    print(response.json())
     assert response.status_code == 200
 
     result = response.json()
