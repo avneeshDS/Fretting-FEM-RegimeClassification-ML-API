@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 import joblib
 import pandas as pd
 
-model = joblib.load("")
+model = joblib.load("V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib")
 
 app =FastAPI(title=" Fretting Regime Classification API", 
              description="Gross Slip, Mixed Slip, or Partial Slip under given Input Parameters")
