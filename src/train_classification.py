@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 import xgboost as xgb
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import (GridSearchCV,RandomizedSearchCV,RepeatedStratifiedKFold)
+import joblib
 
 #Loading data from the csv file
 df= pd.read_csv(r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\data\ML_fretting_screening.csv", encoding="cp1252")
@@ -28,7 +29,7 @@ X = df_ml[['P', 'D', 'µ', 'a', 'µP', 'µPD', 'D_over_a']]
 Y = df_ml[['Regime']]
 
 #Split for training and testing data
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=41)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=41, stratify=Y)
 print(X_test)
 
 # Convert target variables from column vectors to 1D arrays.
@@ -151,3 +152,11 @@ for model_name, search in searches.items():
     print(f"Independent test Macro-Precision:"f"{test_precision:.3f}")
     print(f"Independent test Macro-Recall:"f"{test_recall:.3f}")
     print(f"Independent test Macro-F1:"f"{test_f1:.3f}")
+
+best_model_name = max(searches,key=lambda name: searches[name].best_score_,)
+
+best_model = searches[best_model_name].best_estimator_
+
+joblib.dump(best_model, "fretting_regime_classifier.joblib")
+
+print(f"Saved model: {best_model_name}")
