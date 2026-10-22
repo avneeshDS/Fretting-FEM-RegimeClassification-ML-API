@@ -1,7 +1,6 @@
-import pandas as pd
-import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 # Loading data from the csv file
 df = pd.read_csv(
@@ -10,7 +9,7 @@ df = pd.read_csv(
 )
 
 # Basic information about data
-df.columns.to_list
+df.columns.to_list()
 df.info()
 df.isnull().sum()
 

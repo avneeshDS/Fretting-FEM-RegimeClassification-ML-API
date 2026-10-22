@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
 import joblib
 import pandas as pd
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
 
 model = joblib.load(
     r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib"
@@ -47,32 +47,29 @@ def healthcheck():
 
 @app.post("/predict")
 def predict(data: FrettingInput):
-    try:
-        µP = data.µ * data.P
-        µPD = data.µ * data.P * data.D
-        D_over_a = data.D / data.a
+    µP = data.µ * data.P
+    µPD = data.µ * data.P * data.D
+    D_over_a = data.D / data.a
 
-        input_dataframe = pd.DataFrame(
-            {
-                "P": [data.P],
-                "µ": [data.µ],
-                "D": [data.D],
-                "µP": [µP],
-                "µPD": [µPD],
-                "a": [data.a],
-                "D_over_a": [D_over_a],
-            }
-        )
+    input_dataframe = pd.DataFrame(
+        {
+            "P": [data.P],
+            "µ": [data.µ],
+            "D": [data.D],
+            "µP": [µP],
+            "µPD": [µPD],
+            "a": [data.a],
+            "D_over_a": [D_over_a],
+        }
+    )
 
-        class_names = {0: "Gross Slip", 1: "Mixed Slip", 2: "Partial Slip"}
-        input_dataframe = input_dataframe[Feature_order]
-        predictions = model.predict(input_dataframe)
-        predicted_regime = int(predictions[0])
-        resulted_regime = class_names[predicted_regime]
+    class_names = {0: "Gross Slip", 1: "Mixed Slip", 2: "Partial Slip"}
+    input_dataframe = input_dataframe[Feature_order]
+    predictions = model.predict(input_dataframe)
+    predicted_regime = int(predictions[0])
+    resulted_regime = class_names[predicted_regime]
 
-        return PredictionResponse(
-            predicted_regime=resulted_regime,
-            derived_features={"µP": µP, "µPD": µPD, "D_over_a": D_over_a},
-        )
-    except Exception as error:
-        raise HTTPException(status_code=500, detail=f"Prediction failed{error!s}")
+    return PredictionResponse(
+        predicted_regime=resulted_regime,
+        derived_features={"µP": µP, "µPD": µPD, "D_over_a": D_over_a},
+    )

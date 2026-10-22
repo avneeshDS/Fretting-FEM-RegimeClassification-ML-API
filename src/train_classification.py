@@ -1,35 +1,24 @@
-import pandas as pd
+import joblib
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import (
-    GridSearchCV,
-    train_test_split,
-    cross_val_predict,
-    cross_val_score,
-    cross_validate,
-)
+import pandas as pd
+import xgboost as xgb
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
+    f1_score,
     precision_score,
     recall_score,
-    f1_score,
-    classification_report,
-    confusion_matrix,
-    ConfusionMatrixDisplay,
 )
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-import xgboost as xgb
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import (
     GridSearchCV,
     RandomizedSearchCV,
     RepeatedStratifiedKFold,
+    train_test_split,
 )
-import joblib
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 # Loading data from the csv file
 df = pd.read_csv(
