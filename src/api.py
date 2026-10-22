@@ -6,7 +6,7 @@ import pandas as pd
 model = joblib.load(r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib")
 
 app =FastAPI(title=" Fretting Regime Classification API", 
-             description="Gross Slip, Mixed Slip, or Partial Slip under given Input Parameters")
+             description="Predicts the fretting regime as Gross Slip, Mixed Slip, or Partial Slip for a ball-on-flat contact configuration.")
 
 Feature_order = ['P', 'D', 'µ', 'a', 'µP', 'µPD', 'D_over_a']
 
@@ -22,12 +22,12 @@ class PredictionResponse(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Fretting API for DE prediction is running", "documentation": "/docs",
+    return {"message": "Fretting regime classification API is running", "documentation": "/docs",
             "healthcheck": "/health",}
 
 @app.get("/health")
 def healthcheck():
-    return {"Status": "Healthy", "model_loaded": "True", "model_name": "model"}
+    return {"Status": "Healthy", "model_loaded": True, "model_name": "model"}
 
 @app.post("/predict")
 def predict(data: FrettingInput):
@@ -45,7 +45,7 @@ def predict(data: FrettingInput):
             "a": [data.a],
             "D_over_a": [D_over_a],})
         
-        class_names = {0: "Gross", 1: "Mixed", 2: "Partial"}
+        class_names = {0: "Gross Slip", 1: "Mixed Slip", 2: "Partial Slip"}
         input_dataframe = input_dataframe[Feature_order]
         predictions = model.predict(input_dataframe)
         predicted_regime = int(predictions[0])
