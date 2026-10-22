@@ -3,31 +3,47 @@ from pydantic import BaseModel, Field
 import joblib
 import pandas as pd
 
-model = joblib.load(r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib")
+model = joblib.load(
+    r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib"
+)
 
-app =FastAPI(title=" Fretting Regime Classification API", 
-             description="Predicts the fretting regime as Gross Slip, Mixed Slip, or Partial Slip for a ball-on-flat contact configuration.")
+app = FastAPI(
+    title=" Fretting Regime Classification API",
+    description="Predicts the fretting regime as Gross Slip, Mixed Slip, or Partial Slip for a ball-on-flat contact configuration.",
+)
 
-Feature_order = ['P', 'D', 'µ', 'a', 'µP', 'µPD', 'D_over_a']
+Feature_order = ["P", "D", "µ", "a", "µP", "µPD", "D_over_a"]
+
 
 class FrettingInput(BaseModel):
-    P:float = Field(..., gt=0, description="Applied normal load in N", examples=[20.0])
-    D:float = Field(..., gt=0, description="Displacement amplitude in microns", examples=[0.025])
-    µ:float = Field(..., gt=0, description="CoF", examples=[0.5])
-    a:float = Field(..., gt=0, description="Contact radius, calculated from contact mechanics")
+    P: float = Field(..., gt=0, description="Applied normal load in N", examples=[20.0])
+    D: float = Field(
+        ..., gt=0, description="Displacement amplitude in microns", examples=[0.025]
+    )
+    µ: float = Field(..., gt=0, description="CoF", examples=[0.5])
+    a: float = Field(
+        ..., gt=0, description="Contact radius, calculated from contact mechanics"
+    )
+
 
 class PredictionResponse(BaseModel):
     predicted_regime: str
     derived_features: dict[str, float]
 
+
 @app.get("/")
 def home():
-    return {"message": "Fretting regime classification API is running", "documentation": "/docs",
-            "healthcheck": "/health",}
+    return {
+        "message": "Fretting regime classification API is running",
+        "documentation": "/docs",
+        "healthcheck": "/health",
+    }
+
 
 @app.get("/health")
 def healthcheck():
     return {"Status": "Healthy", "model_loaded": True, "model_name": "model"}
+
 
 @app.post("/predict")
 def predict(data: FrettingInput):
@@ -37,14 +53,17 @@ def predict(data: FrettingInput):
         D_over_a = data.D / data.a
 
         input_dataframe = pd.DataFrame(
-            {"P": [data.P],
-            "µ": [data.µ],
-            "D": [data.D],
-            "µP": [µP],
-            "µPD": [µPD],
-            "a": [data.a],
-            "D_over_a": [D_over_a],})
-        
+            {
+                "P": [data.P],
+                "µ": [data.µ],
+                "D": [data.D],
+                "µP": [µP],
+                "µPD": [µPD],
+                "a": [data.a],
+                "D_over_a": [D_over_a],
+            }
+        )
+
         class_names = {0: "Gross Slip", 1: "Mixed Slip", 2: "Partial Slip"}
         input_dataframe = input_dataframe[Feature_order]
         predictions = model.predict(input_dataframe)
@@ -53,10 +72,7 @@ def predict(data: FrettingInput):
 
         return PredictionResponse(
             predicted_regime=resulted_regime,
-            derived_features={"µP": µP, "µPD": µPD, "D_over_a": D_over_a},)
+            derived_features={"µP": µP, "µPD": µPD, "D_over_a": D_over_a},
+        )
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Prediction failed{error!s}")
-
-
-         
-         
