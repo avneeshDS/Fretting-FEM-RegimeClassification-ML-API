@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 model = joblib.load(
-    r"V:\VZU\Python\Fretting_models\fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib"
+    fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib"
 )
 
 app = FastAPI(
