@@ -3,9 +3,13 @@ import pandas as pd
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-model = joblib.load(
-    fretting_fem_regimeclassification_ml_api\fretting_regime_classifier.joblib"
-)
+from pathlib import Path
+import joblib
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = ROOT_DIR / "fretting_regime_classifier.joblib"
+
+model = joblib.load(MODEL_PATH)
 
 app = FastAPI(
     title=" Fretting Regime Classification API",
