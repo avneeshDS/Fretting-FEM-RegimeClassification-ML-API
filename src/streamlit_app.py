@@ -1,8 +1,10 @@
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/predict"
-
+API_URL = (
+    "https://fastapiregime-gub5e7fxgxg7d7bb."
+    "indiasouthcentral-01.azurewebsites.net/predict"
+)
 st.set_page_config(
     page_title="Fretting Regime Predictor",
     page_icon="⚙️",
